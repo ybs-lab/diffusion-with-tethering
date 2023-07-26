@@ -7,6 +7,7 @@ from concurrent.futures import ProcessPoolExecutor
 from itertools import repeat
 import pandas as pd
 
+
 def generate_regimes_table():
     dt_list = [10., 1., 0.5, 10., 10., 10, 10]
     T_stick_list = [100., 100., 100., 50., 20., 200, 50]
@@ -35,7 +36,7 @@ def test_indifference_to_initial_condition(N_init_conditions=1000, selected_regi
         th0[i] = th0_ratio_arr[i] * [T_stick, T_unstick, D, A]  # theta 0
     init_model_params_list = []
     for i in range(N_init_conditions):
-        init_model_params_list.append(pack_model_params(*th0[i],dt))
+        init_model_params_list.append(pack_model_params(*th0[i], dt))
     params_list_arr = np.empty(N_init_conditions, dtype=object)
     converged_arr = np.zeros(N_init_conditions)
 
@@ -74,7 +75,6 @@ def test_indifference_to_initial_condition(N_init_conditions=1000, selected_regi
     np.save(f"./Data/indifference_to_init_conditions_optimal_params_regime_{selected_regime}.npy", optimal_params)
 
 
-
 def test_accuracy(N_realizations=1000, regimes_arr=np.arange(7, dtype=int)):
     N_regimes = len(regimes_arr)
     params_arr = np.zeros([N_regimes, N_realizations, 4])
@@ -86,7 +86,7 @@ def test_accuracy(N_realizations=1000, regimes_arr=np.arange(7, dtype=int)):
     D = 1.
     A = 1.
     regimes = generate_regimes_table()
-    for i,reg in enumerate(regimes_arr):
+    for i, reg in enumerate(regimes_arr):
         T_stick = regimes[reg]["T_stick"]
         T_unstick = regimes[reg]["T_unstick"]
         dt = regimes[reg]["dt"]
@@ -109,7 +109,7 @@ def test_accuracy(N_realizations=1000, regimes_arr=np.arange(7, dtype=int)):
                 print(f"{j}, {output[0][-1][0]}, {output[0][-1][1]}, {output[0][-1][2]}, {output[0][-1][3]}",
                       flush=True)
     df = pd.DataFrame([])
-    for n,reg in enumerate(regimes_arr):
+    for n, reg in enumerate(regimes_arr):
         cur_df = pd.DataFrame({
             "regime": reg,
             "realization": np.arange(1000),
@@ -135,7 +135,7 @@ def K_most_likely_data():
     df = df[:300].reset_index(drop=True)
     # oracle parameters
     model_params = get_optimal_parameters(dt, df.state.values, df[["x", "y"]].values,
-                                                df[["x_tether", "y_tether"]].values)
+                                          df[["x_tether", "y_tether"]].values)
 
     df.to_csv("./Data/k_most_likely_orig_df.csv")
 
@@ -146,3 +146,10 @@ def K_most_likely_data():
     output = em_viterbi_optimization(df[["x", "y"]].values, model_params, dt=dt,
                                      verbose=True, k_best=20, stop_threshold=1e3)
     np.save("./Data/K_most_likely_oracle.npy", output)
+
+
+def generate_traj_for_fig2():
+    D, A, dt, T_stick, T_unstick, T = [1, 0.5, 1, 100, 100, 2000]
+    N_steps = int(T / dt)
+    df, _ = generate_synthetic_trajectories(N_steps, 1, dt, T_stick, T_unstick, D, A,random_seed=0)
+    df.to_csv("./Data/example_traj_df.csv")
