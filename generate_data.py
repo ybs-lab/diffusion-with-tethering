@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from tests import accuracy_of_hidden_path
 from em_algorithm import em_viterbi_optimization
@@ -18,7 +19,7 @@ def generate_regimes_table():
     return regimes_dict
 
 
-def test_indifference_to_initial_condition(N_init_conditions=1000, selected_regime=0):
+def test_indifference_to_initial_condition(N_init_conditions, selected_regime=0):
     regimes = generate_regimes_table()
     D = 1.
     A = 1.
@@ -69,13 +70,14 @@ def test_indifference_to_initial_condition(N_init_conditions=1000, selected_regi
 
     print(f"Convergence rate: {np.mean(converged_arr):.2f}")
 
+    os.makedirs('./Data', exist_ok=True)
     df.to_csv(f"./Data/indifference_to_init_conditions_df_regime_{selected_regime}.csv")
     np.save(f"./Data/indifference_to_init_conditions_params_list_arr_regime_{selected_regime}.npy", params_list_arr)
     np.save(f"./Data/indifference_to_init_conditions_converged_arr_regime_{selected_regime}.npy", converged_arr)
     np.save(f"./Data/indifference_to_init_conditions_optimal_params_regime_{selected_regime}.npy", optimal_params)
 
 
-def test_accuracy(N_realizations=1000, regimes_arr=np.arange(7, dtype=int)):
+def test_accuracy(N_realizations, regimes_arr=np.arange(7, dtype=int)):
     N_regimes = len(regimes_arr)
     params_arr = np.zeros([N_regimes, N_realizations, 4])
     accuracy_arr = np.zeros([N_regimes, N_realizations])
@@ -112,7 +114,7 @@ def test_accuracy(N_realizations=1000, regimes_arr=np.arange(7, dtype=int)):
     for n, reg in enumerate(regimes_arr):
         cur_df = pd.DataFrame({
             "regime": reg,
-            "realization": np.arange(1000),
+            "realization": np.arange(N_realizations),
             "converged": converged_arr[n],
             "accuracy": accuracy_arr[n],
             "iters": N_iters_arr[n],
