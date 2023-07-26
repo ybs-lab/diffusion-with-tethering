@@ -105,4 +105,5 @@ class TestEM(unittest.TestCase):
         assert convergence_flag
 
 if __name__ == '__main__':
+    print('Running all tests.')
     unittest.main()
