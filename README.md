@@ -1,5 +1,5 @@
 # Diffusion with tethering
-This is the code for the paper "Hidden Markov modeling of single particle diffusion with stochastic tethering".
+This is the code for the paper [Hidden Markov modeling of single particle diffusion with stochastic tethering](https://arxiv.org/abs/2308.01100).
 
 See the notebook [`example.ipynb`](https://github.com/ybs-lab/diffusion-with-tethering/blob/main/example.ipynb) for an example of usage.
 
