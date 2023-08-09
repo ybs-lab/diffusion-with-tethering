@@ -143,11 +143,11 @@ def K_most_likely_data():
 
     output = em_viterbi_optimization(df[["x", "y"]].values, model_params, dt=dt,
                                      verbose=True, k_best=20, stop_threshold=1e-3)
-    np.save("./Data/K_most_likely_alg.npy", output)
+    np.save("./Data/K_most_likely_alg.npy", np.array(output,dtype=object))
 
     output = em_viterbi_optimization(df[["x", "y"]].values, model_params, dt=dt,
                                      verbose=True, k_best=20, stop_threshold=1e3)
-    np.save("./Data/K_most_likely_oracle.npy", output)
+    np.save("./Data/K_most_likely_oracle.npy", np.array(output,dtype=object))
 
 
 def generate_traj_for_fig2():

@@ -6,6 +6,7 @@ import seaborn as sns
 import pandas as pd
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib
+import os
 
 _RCPARAMS_LATEX_SINGLE_COLUMN = {
     'text.usetex': True,
@@ -61,7 +62,8 @@ def figure_1(): #the data here is from experiments and not from synthetic trajec
         fig.colorbar(sc, orientation="horizontal", spacing="proportional", cax=cax)
         cax.set_xlabel(r'$$\rm{Time\,(sec)}$$', fontsize=14)
         cax.xaxis.set_label_coords(.5, -.75)
-
+        
+        os.makedirs('./Figures', exist_ok=True)
         fig.savefig("./Figures/experimental_traj.pdf", bbox_inches='tight', pad_inches=0)
 
 
@@ -85,8 +87,6 @@ def figure_2():
         fig, ax = plt.subplots()
         p1 = ax.plot(free[0], free[1], '-', label=r"$$\rm{Free}$$", color=sns.color_palette("colorblind")[0], linewidth=2)
         p2 = ax.plot(stuck[0], stuck[1], '-', label=r"$$\rm{Tethered}$$", color=sns.color_palette("colorblind")[3], linewidth=2)
-        ax.set_xlim([-18, 52])
-        ax.set_ylim([-58, 12])
         ax.set_aspect("equal")
         ax.legend(fontsize=15)
 
@@ -94,6 +94,7 @@ def figure_2():
         ax.axes.get_yaxis().set_visible(False)
         fig.tight_layout()
 
+        os.makedirs('./Figures', exist_ok=True)
         fig.savefig("./Figures/Example_traj.pdf", bbox_inches='tight')
 
 
