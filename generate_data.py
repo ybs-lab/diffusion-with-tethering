@@ -128,6 +128,7 @@ def test_accuracy(N_realizations, regimes_arr=np.arange(7, dtype=int)):
             "T": 10000,
         })
         df = pd.concat([df, cur_df]).reset_index(drop=True)
+    os.makedirs('Data', exist_ok=True)
     df.to_csv("./Data/test_accuracy_df_full.csv")
 
 
@@ -139,6 +140,7 @@ def K_most_likely_data():
     model_params = get_optimal_parameters(dt, df.state.values, df[["x", "y"]].values,
                                           df[["x_tether", "y_tether"]].values)
 
+    os.makedirs('Data', exist_ok=True)
     df.to_csv("./Data/k_most_likely_orig_df.csv")
 
     output = em_viterbi_optimization(df[["x", "y"]].values, model_params, dt=dt,
@@ -154,4 +156,5 @@ def generate_traj_for_fig2():
     D, A, dt, T_stick, T_unstick, T = [1, 0.5, 1, 100, 100, 2000]
     N_steps = int(T / dt)
     df, _ = generate_synthetic_trajectories(N_steps, 1, dt, T_stick, T_unstick, D, A,random_seed=0)
+    os.makedirs('Data', exist_ok=True)
     df.to_csv("./Data/example_traj_df.csv")
