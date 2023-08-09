@@ -10,20 +10,21 @@ import os
 
 _RCPARAMS_LATEX_SINGLE_COLUMN = {
     'text.usetex': True,
-
     'axes.labelsize': 14,
     'legend.fancybox': True,  # Rounded legend box
     'legend.framealpha': 0.8,
 }
 
-# This is the right width (in inches) for a 'letter' page LaTeX document that imports the geometry package with default parameters.
+# This is the right width (in inches) for a 'letter' page LaTeX document that
+# imports the geometry package with default parameters.
 _PAGE_WIDTH_INCHES = 6.775
 _GOLDEN_RATIO = (5 ** 0.5 - 1) / 2
 RCPARAMS_LATEX_DOUBLE_COLUMN = {**_RCPARAMS_LATEX_SINGLE_COLUMN,
-                                }  # 'figure.figsize': (_PAGE_WIDTH_INCHES / 2, _GOLDEN_RATIO * _PAGE_WIDTH_INCHES / 2)}
+                                }  
 
 
-def figure_1(): #the data here is from experiments and not from synthetic trajectories
+def figure_1():
+    # the data here is from experiments and not from synthetic trajectories
     df = pd.read_csv("./Data/experimental_traj_df.csv")
     with matplotlib.rc_context(rc=RCPARAMS_LATEX_DOUBLE_COLUMN):
         fig, ax = plt.subplots(frameon=False, figsize=(6, 6))
