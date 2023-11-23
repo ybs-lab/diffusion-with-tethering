@@ -7,9 +7,12 @@ import pandas as pd
 
 def generate_theta_hats(N_particles,regime_model_params,random_seed=None,suffix=""):
     """
+    Given a set of model parameters, generate N_particles trajectories and sample their MLE and convergence according to the algorithm (parallelized computation)
     Args:
-        model_params_guess: model parameters for generating the trajectories + the initial guess. see pack_model_params() for type
-        random_seed: seed for generating random trajectories
+        N_particles (int): how many trajectories to generate
+        regime_model_params: model parameters for generating the trajectories + the initial guess. see pack_model_params() for type
+        random_seed (int): seed for generating random trajectories
+        suffix: suffix for the new theta hat columns to be added to the df (to distinguish between theta hat vs hat prime)
 
     Returns:
         df_out (pandas dataframe): contains the true parameter values and the estimated ones for each particle
@@ -39,7 +42,32 @@ def generate_theta_hats(N_particles,regime_model_params,random_seed=None,suffix=
 
 
 
-def analyze_regime(T_stick,T_unstick,D,A,dt=10,T=10000,N_particles=100,regime_id=0,initial_seed=0):
+def analyze_regime_with_bootstrap(T_stick,T_unstick,D,A,dt,T,N_particles,initial_seed=0):
+    """
+    Given a set of model parameters, do the following:
+    1. Generate N_particles trajectories and estimate their MLE theta hat (those particles are called "superparticles")
+    2. For each theta hat generate another N_particles trajectories with those specific theta hat and sample their MLE theta hat prime (converged runs only)
+    3. Calculate theta hat pprime = 2*theta hat - theta hat prime
+    4. Return the df with all the data
+    COMMENT: For reproducibility, the random seed for trajectories generation increases by 1 each call to generate_theta_hats().
+             Therefore, to avoid repeating the same random seed, have initial_seed to be a product of an integer and some number greate than N_particles + 1.
+             In our tests we use N_particles=100 and initial_seed=1000*n_regime
+    generate N_particles trajectories and sample their MLE and convergence according to the algorithm (parallelized computation)
+    Args:
+        T_stick (float): model parameter
+        T_unstick (float): model parameter
+        D (float): model parameter
+        A (float): model parameter
+        dt (float): sampling interval, effectively like a model parameter
+        T (float): total sampling time
+        regime_model_params: model parameters for generating the trajectories + the initial guess. see pack_model_params() for type
+        initial_seed (int): initial seed to which new seeds are added
+        suffix: suffix for the new theta hat columns to be added to the df (to distinguish between theta hat vs hat prime)
+
+    Returns:
+        final_df (pandas dataframe): contains the true parameter values and the estimated ones for each superparticle/particle combination
+    """
+
     true_model_params = pack_model_params(T_stick,T_unstick,D,A,dt)
     random_seed = initial_seed
     df = generate_theta_hats(N_particles,true_model_params,random_seed=random_seed)
@@ -54,19 +82,6 @@ def analyze_regime(T_stick,T_unstick,D,A,dt=10,T=10000,N_particles=100,regime_id
         for i in range(4):
             cur_out_df[f"theta_{i}"] = [T_stick,T_unstick,D,A][i]
             cur_out_df[f"theta_{i}_hat"] = cur_df[f"theta_{i}_hat"].values[0]
+            cur_out_df[f"theta_{i}_hat_pprime"] = 2*cur_out_df[f"theta_{i}_hat"]-cur_out_df[f"theta_{i}_hat_prime"]
         final_df = pd.concat([final_df,cur_out_df])
-    final_df.reset_index(drop=True).to_csv(f"regime_{regime_id}.csv")
-
-
-if __name__ == '__main__':
-    regimes = np.array(
-              [[100, 100, 1, 1],
-               [200, 50, 1, 1],
-               [50, 200, 1, 1],
-               [100, 100, 1, 5],
-               [100, 100, 1, 10]])
-    for n in range(len(regimes)):
-        analyze_regime(*regimes[n],regime_id=n,initial_seed=1000*n)
-    
-        
-        
+    return final_df.reset_index(drop=True)

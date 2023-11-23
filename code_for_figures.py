@@ -245,6 +245,77 @@ def figure_6():
         fig.tight_layout()
         fig.savefig("./Figures/regimes_1_to_3.pdf", bbox_inches='tight')
 
+def new_table_plus_new_figure_6():
+    full_df = pd.read_csv("./Data/model_params_with_bootstrap.csv")
+    full_df = full_df[full_df["converged"]].reset_index(drop=True)
+
+    df = pd.DataFrame({    
+    "T0":full_df.groupby(["regime","superparticle"])["theta_0_hat_pprime"].median(),
+    "T1":full_df.groupby(["regime","superparticle"])["theta_1_hat_pprime"].median(),
+    "D":full_df.groupby(["regime","superparticle"])["theta_2_hat_pprime"].median(),
+    "A":full_df.groupby(["regime","superparticle"])["theta_3_hat_pprime"].median(),
+    }).reset_index(drop=False)
+
+    with matplotlib.rc_context(rc=RCPARAMS_LATEX_DOUBLE_COLUMN):
+        fig, axes = plt.subplots(1, 4, figsize=(16, 3))
+        ax = axes[0]
+        plt.axes(ax)
+        sns.kdeplot(df.groupby("regime").get_group(0)["T0"], clip=[0, 1000], label=r"$$\Delta t = 10$$")
+        sns.kdeplot(df.groupby("regime").get_group(1)["T0"], clip=[0, 1000], label=r"$$\Delta t = 1$$")
+        sns.kdeplot(df.groupby("regime").get_group(2)["T0"], clip=[0, 1000], label=r"$$\Delta t = 0.5$$")
+        ylim = ax.get_ylim()
+        ax.plot([100, 100], 2 * np.array(ylim), "k--", linewidth=1.5)
+        ax.set_ylim(ylim)
+        ax.set_xlabel(r"$\tau_0$", fontsize=16)
+        ax.set_xlim([0, 220])
+        ax.get_yaxis().set_visible(False)
+        ax.tick_params(axis='x', which='major', labelsize=14)
+        leg = ax.legend(loc="upper left", fontsize=15)
+
+        ax = axes[1]
+        plt.axes(ax)
+        sns.kdeplot(df.groupby("regime").get_group(0)["T1"], clip=[0, 1000], label=1)
+        sns.kdeplot(df.groupby("regime").get_group(1)["T1"], clip=[0, 1000], label=2)
+        sns.kdeplot(df.groupby("regime").get_group(2)["T1"], clip=[0, 1000], label=3)
+        ylim = ax.get_ylim()
+        ax.plot([100, 100], 2 * np.array(ylim), "k--", linewidth=1.5)
+        ax.set_ylim(ylim)
+        ax.set_xlabel(r"$\tau_1$", fontsize=16)
+        ax.set_xlim([0, 220])
+        ax.get_yaxis().set_visible(False)
+        ax.set_xlabel(r"$\tau_1$")
+        ax.tick_params(axis='x', which='major', labelsize=14)
+
+        ax = axes[2]
+        plt.axes(ax)
+        sns.kdeplot(df.groupby("regime").get_group(0)["D"], clip=[0, 1000], label=1)
+        sns.kdeplot(df.groupby("regime").get_group(1)["D"], clip=[0, 1000], label=2)
+        sns.kdeplot(df.groupby("regime").get_group(2)["D"], clip=[0, 1000], label=3)
+        ylim = ax.get_ylim()
+        ax.plot([1, 1], 2 * np.array(ylim), "k--", linewidth=1.5)
+        ax.set_xlim([0.75, 1.25])
+        ax.set_ylim(ylim)
+        ax.set_xlabel(r"$D$", fontsize=16)
+        ax.get_yaxis().set_visible(False)
+        ax.tick_params(axis='x', which='major', labelsize=14)
+
+        ax = axes[3]
+        plt.axes(ax)
+        sns.kdeplot(df.groupby("regime").get_group(0)["A"], clip=[0, 1000], label=1)
+        sns.kdeplot(df.groupby("regime").get_group(1)["A"], clip=[0, 1000], label=2)
+        sns.kdeplot(df.groupby("regime").get_group(2)["A"], clip=[0, 1000], label=3)
+        ax.set_xlim([0.75, 1.25])
+        ylim = ax.get_ylim()
+        ax.plot([1, 1], 2 * np.array(ylim), "k--", linewidth=1.5)
+        ax.set_ylim(ylim)
+        ax.set_xlabel(r"$A$", fontsize=16)
+        ax.get_yaxis().set_visible(False)
+        ax.tick_params(axis='x', which='major', labelsize=14)
+
+        fig.tight_layout()
+            fig.savefig("./Figures/regimes_1_to_3.pdf", bbox_inches='tight')
+        
+    
 
 def figure_7():
     params_by_iter, params_std_by_iter, max_L_by_iter, softmax_by_iter, S_list, X_tether_list, convergence_flag = np.load(

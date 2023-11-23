@@ -1,6 +1,7 @@
 import os
 import numpy as np
 from tests import accuracy_of_hidden_path
+from bootstrap_test import analyze_regime_with_bootstrap
 from em_algorithm import em_viterbi_optimization
 from model import pack_model_params, generate_synthetic_trajectories, get_optimal_parameters
 from scipy.stats import loguniform
@@ -76,6 +77,20 @@ def test_indifference_to_initial_condition(N_init_conditions, selected_regime=0)
     np.save(f"./Data/indifference_to_init_conditions_converged_arr_regime_{selected_regime}.npy", converged_arr)
     np.save(f"./Data/indifference_to_init_conditions_optimal_params_regime_{selected_regime}.npy", optimal_params)
 
+def test_model_params_with_bootstrap(N_particles=100):
+    regimes = generate_regimes_table()
+    D = 1.
+    A = 1.
+    df_arr = np.empty(7,dtype=object)
+    for n in range(2,7):
+        T_stick = regimes[n]["T_stick"]
+        T_unstick = regimes[n]["T_unstick"]
+        dt = regimes[n]["dt"]
+        df = analyze_regime_with_bootstrap(T_stick,T_unstick,D,A,dt,T=10000.,N_particles=N_particles,initial_seed=1000*n)
+        df["regime"]=n
+        df_arr[n]=df
+    pd.concat(df_arr).reset_index(drop=True).to_csv("./Data/model_params_with_bootstrap.csv")
+    
 
 def test_accuracy(N_realizations, regimes_arr=np.arange(7, dtype=int)):
     N_regimes = len(regimes_arr)
