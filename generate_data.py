@@ -82,13 +82,15 @@ def test_model_params_with_bootstrap(N_particles=100):
     D = 1.
     A = 1.
     df_arr = np.empty(7,dtype=object)
-    for n in range(2,7):
+    for n in range(7):
+        print(f"Start analyzing regime {n}")
         T_stick = regimes[n]["T_stick"]
         T_unstick = regimes[n]["T_unstick"]
         dt = regimes[n]["dt"]
         df = analyze_regime_with_bootstrap(T_stick,T_unstick,D,A,dt,T=10000.,N_particles=N_particles,initial_seed=1000*n)
         df["regime"]=n
         df_arr[n]=df
+        print(f"Done analyzing regime {n}")
     pd.concat(df_arr).reset_index(drop=True).to_csv("./Data/model_params_with_bootstrap.csv")
     
 

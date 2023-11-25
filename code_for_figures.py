@@ -270,7 +270,7 @@ def new_table_plus_new_figure_6():
         ax.set_xlim([0, 220])
         ax.get_yaxis().set_visible(False)
         ax.tick_params(axis='x', which='major', labelsize=14)
-        leg = ax.legend(loc="upper left", fontsize=15)
+        leg = ax.legend(loc="upper right", fontsize=15)
 
         ax = axes[1]
         plt.axes(ax)
@@ -313,7 +313,7 @@ def new_table_plus_new_figure_6():
         ax.tick_params(axis='x', which='major', labelsize=14)
 
         fig.tight_layout()
-            fig.savefig("./Figures/regimes_1_to_3.pdf", bbox_inches='tight')
+        fig.savefig("./Figures/regimes_1_to_3_bootstrap.pdf", bbox_inches='tight')
         
     
 
