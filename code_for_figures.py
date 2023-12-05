@@ -185,71 +185,12 @@ def figure_5():
 
 
 def figure_6():
-    df = pd.read_csv("./Data/test_accuracy_df_full.csv")
-    with matplotlib.rc_context(rc=RCPARAMS_LATEX_DOUBLE_COLUMN):
-        fig, axes = plt.subplots(1, 4, figsize=(16, 3))
-        ax = axes[0]
-        plt.axes(ax)
-        sns.kdeplot(df.groupby("regime").get_group(0)["T0"], clip=[0, 1000], label=r"$$\Delta t = 10$$")
-        sns.kdeplot(df.groupby("regime").get_group(1)["T0"], clip=[0, 1000], label=r"$$\Delta t = 1$$")
-        sns.kdeplot(df.groupby("regime").get_group(2)["T0"], clip=[0, 1000], label=r"$$\Delta t = 0.5$$")
-        ylim = ax.get_ylim()
-        ax.plot([100, 100], 2 * np.array(ylim), "k--", linewidth=1.5)
-        ax.set_ylim(ylim)
-        ax.set_xlabel(r"$\tau_0$", fontsize=16)
-        ax.set_xlim([0, 220])
-        ax.get_yaxis().set_visible(False)
-        ax.tick_params(axis='x', which='major', labelsize=14)
-        leg = ax.legend(loc="upper left", fontsize=15)
-
-        ax = axes[1]
-        plt.axes(ax)
-        sns.kdeplot(df.groupby("regime").get_group(0)["T1"], clip=[0, 1000], label=1)
-        sns.kdeplot(df.groupby("regime").get_group(1)["T1"], clip=[0, 1000], label=2)
-        sns.kdeplot(df.groupby("regime").get_group(2)["T1"], clip=[0, 1000], label=3)
-        ylim = ax.get_ylim()
-        ax.plot([100, 100], 2 * np.array(ylim), "k--", linewidth=1.5)
-        ax.set_ylim(ylim)
-        ax.set_xlabel(r"$\tau_1$", fontsize=16)
-        ax.set_xlim([0, 220])
-        ax.get_yaxis().set_visible(False)
-        ax.set_xlabel(r"$\tau_1$")
-        ax.tick_params(axis='x', which='major', labelsize=14)
-
-        ax = axes[2]
-        plt.axes(ax)
-        sns.kdeplot(df.groupby("regime").get_group(0)["D"], clip=[0, 1000], label=1)
-        sns.kdeplot(df.groupby("regime").get_group(1)["D"], clip=[0, 1000], label=2)
-        sns.kdeplot(df.groupby("regime").get_group(2)["D"], clip=[0, 1000], label=3)
-        ylim = ax.get_ylim()
-        ax.plot([1, 1], 2 * np.array(ylim), "k--", linewidth=1.5)
-        ax.set_xlim([0.75, 1.25])
-        ax.set_ylim(ylim)
-        ax.set_xlabel(r"$D$", fontsize=16)
-        ax.get_yaxis().set_visible(False)
-        ax.tick_params(axis='x', which='major', labelsize=14)
-
-        ax = axes[3]
-        plt.axes(ax)
-        sns.kdeplot(df.groupby("regime").get_group(0)["A"], clip=[0, 1000], label=1)
-        sns.kdeplot(df.groupby("regime").get_group(1)["A"], clip=[0, 1000], label=2)
-        sns.kdeplot(df.groupby("regime").get_group(2)["A"], clip=[0, 1000], label=3)
-        ax.set_xlim([0.75, 1.25])
-        ylim = ax.get_ylim()
-        ax.plot([1, 1], 2 * np.array(ylim), "k--", linewidth=1.5)
-        ax.set_ylim(ylim)
-        ax.set_xlabel(r"$A$", fontsize=16)
-        ax.get_yaxis().set_visible(False)
-        ax.tick_params(axis='x', which='major', labelsize=14)
-
-        fig.tight_layout()
-        fig.savefig("./Figures/regimes_1_to_3.pdf", bbox_inches='tight')
-
-def new_table_plus_new_figure_6():
+    #MLE df
+    df_MLE = pd.read_csv("./Data/test_accuracy_df_full.csv")
+    #bootstrap df
     full_df = pd.read_csv("./Data/model_params_with_bootstrap.csv")
     full_df = full_df[full_df["converged"]].reset_index(drop=True)
-
-    df = pd.DataFrame({    
+    df_bootstrap = pd.DataFrame({    
     "T0":full_df.groupby(["regime","superparticle"])["theta_0_hat_pprime"].median(),
     "T1":full_df.groupby(["regime","superparticle"])["theta_1_hat_pprime"].median(),
     "D":full_df.groupby(["regime","superparticle"])["theta_2_hat_pprime"].median(),
@@ -257,64 +198,52 @@ def new_table_plus_new_figure_6():
     }).reset_index(drop=False)
 
     with matplotlib.rc_context(rc=RCPARAMS_LATEX_DOUBLE_COLUMN):
-        fig, axes = plt.subplots(1, 4, figsize=(16, 3))
-        ax = axes[0]
-        plt.axes(ax)
-        sns.kdeplot(df.groupby("regime").get_group(0)["T0"], clip=[0, 1000], label=r"$$\Delta t = 10$$")
-        sns.kdeplot(df.groupby("regime").get_group(1)["T0"], clip=[0, 1000], label=r"$$\Delta t = 1$$")
-        sns.kdeplot(df.groupby("regime").get_group(2)["T0"], clip=[0, 1000], label=r"$$\Delta t = 0.5$$")
-        ylim = ax.get_ylim()
-        ax.plot([100, 100], 2 * np.array(ylim), "k--", linewidth=1.5)
-        ax.set_ylim(ylim)
-        ax.set_xlabel(r"$\tau_0$", fontsize=16)
-        ax.set_xlim([0, 220])
-        ax.get_yaxis().set_visible(False)
-        ax.tick_params(axis='x', which='major', labelsize=14)
-        leg = ax.legend(loc="upper right", fontsize=15)
-
-        ax = axes[1]
-        plt.axes(ax)
-        sns.kdeplot(df.groupby("regime").get_group(0)["T1"], clip=[0, 1000], label=1)
-        sns.kdeplot(df.groupby("regime").get_group(1)["T1"], clip=[0, 1000], label=2)
-        sns.kdeplot(df.groupby("regime").get_group(2)["T1"], clip=[0, 1000], label=3)
-        ylim = ax.get_ylim()
-        ax.plot([100, 100], 2 * np.array(ylim), "k--", linewidth=1.5)
-        ax.set_ylim(ylim)
-        ax.set_xlabel(r"$\tau_1$", fontsize=16)
-        ax.set_xlim([0, 220])
-        ax.get_yaxis().set_visible(False)
-        ax.set_xlabel(r"$\tau_1$")
-        ax.tick_params(axis='x', which='major', labelsize=14)
-
-        ax = axes[2]
-        plt.axes(ax)
-        sns.kdeplot(df.groupby("regime").get_group(0)["D"], clip=[0, 1000], label=1)
-        sns.kdeplot(df.groupby("regime").get_group(1)["D"], clip=[0, 1000], label=2)
-        sns.kdeplot(df.groupby("regime").get_group(2)["D"], clip=[0, 1000], label=3)
-        ylim = ax.get_ylim()
-        ax.plot([1, 1], 2 * np.array(ylim), "k--", linewidth=1.5)
-        ax.set_xlim([0.75, 1.25])
-        ax.set_ylim(ylim)
-        ax.set_xlabel(r"$D$", fontsize=16)
-        ax.get_yaxis().set_visible(False)
-        ax.tick_params(axis='x', which='major', labelsize=14)
-
-        ax = axes[3]
-        plt.axes(ax)
-        sns.kdeplot(df.groupby("regime").get_group(0)["A"], clip=[0, 1000], label=1)
-        sns.kdeplot(df.groupby("regime").get_group(1)["A"], clip=[0, 1000], label=2)
-        sns.kdeplot(df.groupby("regime").get_group(2)["A"], clip=[0, 1000], label=3)
-        ax.set_xlim([0.75, 1.25])
-        ylim = ax.get_ylim()
-        ax.plot([1, 1], 2 * np.array(ylim), "k--", linewidth=1.5)
-        ax.set_ylim(ylim)
-        ax.set_xlabel(r"$A$", fontsize=16)
-        ax.get_yaxis().set_visible(False)
-        ax.tick_params(axis='x', which='major', labelsize=14)
-
-        fig.tight_layout()
-        fig.savefig("./Figures/regimes_1_to_3_bootstrap.pdf", bbox_inches='tight')
-        
+        fig,ax=plt.subplots(2,4,figsize=(16, 6))
+        titles = [r"$\tau_0$",r"$\tau_1$",r"$D$",r"$A$"]
+        colnames = ["T0","T1","D","A"]
+        fig.tight_layout()    
+        for i in range(4):
+            cur_ax=ax[0,i]
+            sns.kdeplot(df_MLE.groupby("regime").get_group(0)[colnames[i]], clip=[0, 1000], label=r"$$\Delta t = 10$$",ax=cur_ax)
+            sns.kdeplot(df_MLE.groupby("regime").get_group(1)[colnames[i]], clip=[0, 1000], label=r"$$\Delta t = 1$$",ax=cur_ax)
+            sns.kdeplot(df_MLE.groupby("regime").get_group(2)[colnames[i]], clip=[0, 1000], label=r"$$\Delta t = 0.5$$",ax=cur_ax)
+            cur_ax.set_xlabel(None)
+            cur_ax.get_yaxis().set_visible(False)
+            cur_ax.set_title(titles[i],fontsize=24)
+            cur_ax.tick_params(axis='x', which='major', labelsize=20)
+            labels = [item.get_text() for item in cur_ax.get_xticklabels()]
+            empty_string_labels = ['']*len(labels)
+            cur_ax.set_xticklabels(empty_string_labels)
+            
+            if i==0 or i==1:
+                cur_ax.set_xlim([0,220])
+                plt.axes(cur_ax)
+                plt.axvline(x=100,linestyle="--",linewidth=1.5,color="k")
+            else:
+                cur_ax.set_xlim([0.75,1.25])                
+                plt.axes(cur_ax)
+                plt.axvline(x=1,linestyle="--",linewidth=1.5,color="k")
+        for i in range(4):
+            cur_ax=ax[1,i]
+            sns.kdeplot(df_bootstrap.groupby("regime").get_group(0)[colnames[i]], clip=[0, 1000], label=r"$$\Delta t = 10$$",ax=cur_ax)
+            sns.kdeplot(df_bootstrap.groupby("regime").get_group(1)[colnames[i]], clip=[0, 1000], label=r"$$\Delta t = 1$$",ax=cur_ax)
+            sns.kdeplot(df_bootstrap.groupby("regime").get_group(2)[colnames[i]], clip=[0, 1000], label=r"$$\Delta t = 0.5$$",ax=cur_ax)
+            cur_ax.set_xlabel(None)
+            cur_ax.get_yaxis().set_visible(False)
+            cur_ax.tick_params(axis='x', which='major', labelsize=20)
+            if i==0 or i==1:
+                cur_ax.set_xlim([0,220])
+                plt.axes(cur_ax)
+                plt.axvline(x=100,linestyle="--",linewidth=1.5,color="k")
+            else:
+                cur_ax.set_xlim([0.75,1.25])                
+                plt.axes(cur_ax)
+                plt.axvline(x=1,linestyle="--",linewidth=1.5,color="k")
+        fig.text(-0.01,0.67,"MLE",fontsize=24,rotation="vertical")
+        fig.text(-0.01,0.17,"Bootstrap",fontsize=24,rotation="vertical")
+        leg = ax[0,0].legend(loc="upper left", fontsize=15)
+        fig.tight_layout()        
+    fig.savefig("./Figures/regimes_1_to_3.pdf",bbox_inches="tight")
     
 
 def figure_7():
