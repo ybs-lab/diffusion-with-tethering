@@ -12,7 +12,8 @@ if __name__ == '__main__':
     K_most_likely_data()
     generate_traj_for_fig2()
     test_model_params_with_bootstrap()
-    # figure_1()    # this requires experimental data
+    # Fig. 1 requires experimental data which is not included in the repository
+    # figure_1()
     figure_2()
     figure_3()
     figure_5()
