@@ -1,6 +1,6 @@
 import numpy as np
 from em_algorithm import em_viterbi_optimization
-from model import generate_synthetic_trajectories, pack_model_params
+from model import generate_trajectories_dataframe, pack_model_params
 from concurrent.futures import ProcessPoolExecutor
 from itertools import repeat
 import pandas as pd
@@ -21,7 +21,7 @@ def generate_theta_hats(N_particles, regime_model_params, random_seed=None, suff
     T = 10000
     dt = regime_model_params.dt
     N_steps = int(T/dt)
-    df_trajs = generate_synthetic_trajectories(N_steps, N_particles, dt, regime_model_params.T_stick,
+    df_trajs = generate_trajectories_dataframe(N_steps, N_particles, dt, regime_model_params.T_stick,
                                                regime_model_params.T_unstick, regime_model_params.D, regime_model_params.A, random_seed=random_seed)[0]
     all_particles_trajs = [
         x[1][["x", "y"]].values for x in df_trajs.groupby("particle")]

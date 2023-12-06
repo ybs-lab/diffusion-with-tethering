@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from viterbi import viterbi_paths_to_end_nodes, get_viterbi_paths
-from model import pack_model_params, get_optimal_parameters, generate_synthetic_trajectories
+from model import pack_model_params, get_optimal_parameters, generate_trajectories_dataframe
 from em_algorithm import em_viterbi_optimization
 import unittest
 import cProfile
@@ -39,7 +39,7 @@ class TestViterbiAlgorithm(unittest.TestCase):
         A, dt, T_stick, T_unstick, T = [1, 10, 2 * 10 ** 3, 2 * 10 ** 3, 10 ** 5]
         A *= D
         N_steps = int(T / dt)
-        df, model_params = generate_synthetic_trajectories(N_steps, 1, dt, T_stick, T_unstick, D, A)
+        df, model_params = generate_trajectories_dataframe(N_steps, 1, dt, T_stick, T_unstick, D, A)
         X_arr = df[["x", "y"]].values
 
         # p = profile("on")
@@ -58,7 +58,7 @@ class TestGetOptimalParameters(unittest.TestCase):
         A, dt, T_stick, T_unstick, T = [1, 10, 2 * 10 ** 3, 2 * 10 ** 3, 10 ** 5]
         A *= D
         N_steps = int(T / dt)
-        df, model_params = generate_synthetic_trajectories(N_steps, 1, dt, T_stick, T_unstick, D, A,random_seed=0)
+        df, model_params = generate_trajectories_dataframe(N_steps, 1, dt, T_stick, T_unstick, D, A,random_seed=0)
 
         params_est = get_optimal_parameters(dt, df.state.values, df[["x", "y"]].values,
                                             df[["x_tether", "y_tether"]].values)
@@ -81,7 +81,7 @@ class TestEM(unittest.TestCase):
         A, dt, T_stick, T_unstick, T = [1, 10, 2 * 10 ** 3, 2 * 10 ** 3, 10 ** 5]
         A *= D
         N_steps = int(T / dt)
-        df, model_params = generate_synthetic_trajectories(N_steps, 1, dt, T_stick, T_unstick, D, A)
+        df, model_params = generate_trajectories_dataframe(N_steps, 1, dt, T_stick, T_unstick, D, A)
 
         X_arr = df[["x", "y"]].values
         model_params = pack_model_params(T_stick * 2, T_unstick / 2, D / 2, A * 2, dt)

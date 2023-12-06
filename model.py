@@ -295,7 +295,7 @@ def calc_x_tether(S_arr, X_arr):
     return X_tether_arr
 
 
-def generate_synthetic_trajectories(N_steps: int, N_particles: int, dt: float, T_stick: float, T_unstick: float,
+def generate_trajectories_dataframe(N_steps: int, N_particles: int, dt: float, T_stick: float, T_unstick: float,
                                     D: float, A: float, random_seed=None):
     """
     this is a utility function wrapping the "generate_model_trajectories" function
