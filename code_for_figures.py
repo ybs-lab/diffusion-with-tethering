@@ -263,7 +263,6 @@ def figure_7():
     with matplotlib.rc_context(rc=RCPARAMS_LATEX_DOUBLE_COLUMN):
         fig, ax = plt.subplots(3, gridspec_kw={'height_ratios': [1, 10, 10]})
         ax[0].imshow(true_df.state.values.reshape((1, N)), cmap=cmap, interpolation="none", aspect="auto")
-        ax[0].grid(True, axis="x")
         ax[0].xaxis.set_ticklabels([])
         ax[0].xaxis.set_ticks_position('none')
         ax[0].set_yticks([])
@@ -272,7 +271,6 @@ def figure_7():
         for j in range(1, 3):
             ax[j].imshow([S_list_oracle, S_list_alg][j - 1], cmap=cmap, interpolation="none", aspect="auto")
             ax[j].set_yticks(np.arange(ylim) + 1)
-            ax[j].grid(True, axis="x")
             for i in range(ylim):
                 ax[j].plot([0, N - 1], [i + 0.5, i + 0.5], 'k', linewidth=1)
 
