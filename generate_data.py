@@ -1,8 +1,9 @@
 import os
 import numpy as np
 from tests import accuracy_of_hidden_path
+from bootstrap import analyze_regime_with_bootstrap
 from em_algorithm import em_viterbi_optimization
-from model import pack_model_params, generate_synthetic_trajectories, get_optimal_parameters
+from model import pack_model_params, generate_trajectories_dataframe, get_optimal_parameters
 from scipy.stats import loguniform
 from concurrent.futures import ProcessPoolExecutor
 from itertools import repeat
@@ -29,7 +30,7 @@ def test_indifference_to_initial_condition(N_init_conditions, selected_regime=0)
     T = 10000
     params_arr = np.array([T_stick, T_unstick, D, A])
     N_steps = int(T / dt)
-    df, model_params = generate_synthetic_trajectories(N_steps, 1, dt, T_stick, T_unstick, D, A, random_seed=42)
+    df, model_params = generate_trajectories_dataframe(N_steps, 1, dt, T_stick, T_unstick, D, A, random_seed=42)
     X_arr = df[["x", "y"]].values
     th0_ratio_arr = loguniform.rvs(1. / 10, 10., size=(N_init_conditions, 4))
     th0 = 0 * th0_ratio_arr
@@ -76,6 +77,22 @@ def test_indifference_to_initial_condition(N_init_conditions, selected_regime=0)
     np.save(f"./Data/indifference_to_init_conditions_converged_arr_regime_{selected_regime}.npy", converged_arr)
     np.save(f"./Data/indifference_to_init_conditions_optimal_params_regime_{selected_regime}.npy", optimal_params)
 
+def test_model_params_with_bootstrap(N_particles=100):
+    regimes = generate_regimes_table()
+    D = 1.
+    A = 1.
+    df_list = []
+    for n in range(7):
+        print(f"Start analyzing regime {n}")
+        T_stick = regimes[n]["T_stick"]
+        T_unstick = regimes[n]["T_unstick"]
+        dt = regimes[n]["dt"]
+        df = analyze_regime_with_bootstrap(T_stick,T_unstick,D,A,dt,T=10000.,N_particles=N_particles,initial_seed=1000*n)
+        df["regime"]=n
+        df_list.append(df)
+        print(f"Done analyzing regime {n}")
+    pd.concat(df_list).reset_index(drop=True).to_csv("./Data/model_params_with_bootstrap.csv")
+    
 
 def test_accuracy(N_realizations, regimes_arr=np.arange(7, dtype=int)):
     N_regimes = len(regimes_arr)
@@ -94,7 +111,7 @@ def test_accuracy(N_realizations, regimes_arr=np.arange(7, dtype=int)):
         dt = regimes[reg]["dt"]
         N_steps = int(T / dt)
 
-        df, model_params = generate_synthetic_trajectories(N_steps, N_realizations, dt, T_stick, T_unstick, D, A, )
+        df, model_params = generate_trajectories_dataframe(N_steps, N_realizations, dt, T_stick, T_unstick, D, A, )
         X_arr_list = [df_particle[["x", "y"]].values for _, df_particle in df.groupby("particle")]
         S_list = [df_particle["state"].values for _, df_particle in df.groupby("particle")]
         X_tether_list = [df_particle[["x_tether", "y_tether"]].values for _, df_particle in df.groupby("particle")]
@@ -134,7 +151,7 @@ def test_accuracy(N_realizations, regimes_arr=np.arange(7, dtype=int)):
 
 def K_most_likely_data():
     D, A, dt, T_stick, T_unstick, T = [1, 1, 10, 100, 100, 10000]
-    df, model_params = generate_synthetic_trajectories(int(T / dt), 1, dt, T_stick, T_unstick, D, A, random_seed=8)
+    df, model_params = generate_trajectories_dataframe(int(T / dt), 1, dt, T_stick, T_unstick, D, A, random_seed=8)
     df = df[:300].reset_index(drop=True)
     # oracle parameters
     model_params = get_optimal_parameters(dt, df.state.values, df[["x", "y"]].values,
@@ -155,6 +172,6 @@ def K_most_likely_data():
 def generate_traj_for_fig2():
     D, A, dt, T_stick, T_unstick, T = [1, 0.5, 1, 100, 100, 2000]
     N_steps = int(T / dt)
-    df, _ = generate_synthetic_trajectories(N_steps, 1, dt, T_stick, T_unstick, D, A,random_seed=0)
+    df, _ = generate_trajectories_dataframe(N_steps, 1, dt, T_stick, T_unstick, D, A,random_seed=0)
     os.makedirs('Data', exist_ok=True)
     df.to_csv("./Data/example_traj_df.csv")
